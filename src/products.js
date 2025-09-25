@@ -163,6 +163,9 @@ function deleteProduct(id) {
 }
 
 $(document).ready(function () {
+  // Clear product form fields on page load
+  $("#product-form")[0].reset();
+  $("#product-id").val("");
   // Add sort icons to table headers
   $("#products-table thead th").each(function (i) {
     if (i < 3) {
