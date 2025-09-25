@@ -163,6 +163,15 @@ function deleteProduct(id) {
 }
 
 $(document).ready(function () {
+  // Restore page size from localStorage if available
+  const savedPageSize = localStorage.getItem("pageSize");
+  if (savedPageSize) {
+    pageSize = parseInt(savedPageSize);
+    $("#page-size").val(savedPageSize);
+  } else {
+    pageSize = 5;
+    $("#page-size").val("5");
+  }
   // Clear product form fields on page load
   $("#product-form")[0].reset();
   $("#product-id").val("");
@@ -259,6 +268,7 @@ $(document).ready(function () {
   // Page size change
   $("#page-size").on("change", function () {
     pageSize = parseInt($(this).val());
+    localStorage.setItem("pageSize", pageSize);
     currentPage = 1;
     renderProducts(getPagedAndSortedProducts());
     renderPagination();
