@@ -1,6 +1,3 @@
-// products.js
-// Handles AJAX CRUD operations for products using jQuery
-
 const apiBaseUrl = "https://localhost:7094/api/products";
 
 function fetchProducts() {
@@ -28,7 +25,7 @@ function renderProducts(products) {
       <tr>
         <td>${product.id}</td>
         <td>${product.name}</td>
-        <td>${product.price}</td>
+        <td>$${product.price}</td>
         <td>
           <button class="edit-btn" data-id="${product.id}">Edit</button>
           <button class="delete-btn" data-id="${product.id}">Delete</button>
@@ -104,7 +101,9 @@ $(document).ready(function () {
     const row = $(this).closest("tr");
     const id = $(this).data("id");
     const name = row.find("td:eq(1)").text();
-    const price = row.find("td:eq(2)").text();
+    // Remove $ if present for editing
+    const priceText = row.find("td:eq(2)").text();
+    const price = priceText.replace(/\$/g, "");
     $("#product-id").val(id);
     $("#product-name").val(name);
     $("#product-price").val(price);
