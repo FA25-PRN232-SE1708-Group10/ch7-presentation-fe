@@ -89,6 +89,11 @@ $(document).ready(function () {
     const id = $("#product-id").val();
     const name = $("#product-name").val();
     const price = parseFloat($("#product-price").val());
+    if (isNaN(price) || price < 0.01) {
+      alert("Price must be at least $0.01");
+      $("#product-price").focus();
+      return;
+    }
     const product = { name, price };
     if (id) {
       updateProduct(id, product);
