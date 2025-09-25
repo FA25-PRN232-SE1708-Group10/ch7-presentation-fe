@@ -1,16 +1,21 @@
 const apiBaseUrl = "https://localhost:7094/api/products";
+
 let currentPage = 1;
 let pageSize = 5;
 let totalResults = 0;
+let sortField = null;
+let sortDir = "asc";
+let lastFetchedProducts = [];
 
-function fetchProducts(page = currentPage, size = pageSize) {
+function fetchProducts() {
   $.ajax({
-    url: `${apiBaseUrl}?page=${page}&pageSize=${size}`,
+    url: `${apiBaseUrl}?page=1&pageSize=1000`,
     method: "GET",
     success: function (response) {
       if (response.success) {
-        totalResults = response.data.totalResults;
-        renderProducts(response.data.items);
+        lastFetchedProducts = response.data.items || [];
+        totalResults = lastFetchedProducts.length;
+        renderProducts(getPagedAndSortedProducts());
         renderPagination();
       } else {
         alert("Failed to fetch products");
@@ -20,6 +25,25 @@ function fetchProducts(page = currentPage, size = pageSize) {
       alert("Error fetching products");
     },
   });
+}
+
+function getPagedAndSortedProducts() {
+  let arr = [...lastFetchedProducts];
+  if (sortField) {
+    arr.sort((a, b) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+      if (sortField === "name") {
+        aVal = aVal ? aVal.toLowerCase() : "";
+        bVal = bVal ? bVal.toLowerCase() : "";
+      }
+      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+  const start = (currentPage - 1) * pageSize;
+  return arr.slice(start, start + pageSize);
 }
 
 function renderProducts(products) {
@@ -102,6 +126,78 @@ function deleteProduct(id) {
 }
 
 $(document).ready(function () {
+  // Add sort icons to table headers
+  $("#products-table thead th").each(function (i) {
+    if (i < 3) {
+      $(this).css("cursor", "pointer");
+      $(this).append(' <span class="sort-indicator"></span>');
+    }
+  });
+  function updateSortIndicators() {
+    $("#products-table thead th").each(function (i) {
+      if (i === 0 && sortField === "id") {
+        $(this)
+          .find(".sort-indicator")
+          .text(sortDir === "asc" ? "▲" : "▼");
+      } else if (i === 1 && sortField === "name") {
+        $(this)
+          .find(".sort-indicator")
+          .text(sortDir === "asc" ? "▲" : "▼");
+      } else if (i === 2 && sortField === "price") {
+        $(this)
+          .find(".sort-indicator")
+          .text(sortDir === "asc" ? "▲" : "▼");
+      } else {
+        $(this).find(".sort-indicator").text("");
+      }
+    });
+  }
+  // Sorting click handlers
+  $("#products-table thead th").each(function (i) {
+    if (i === 0) {
+      $(this).on("click", function () {
+        if (sortField === "id") {
+          sortDir = sortDir === "asc" ? "desc" : "asc";
+        } else {
+          sortField = "id";
+          sortDir = "asc";
+        }
+        currentPage = 1;
+        renderProducts(getPagedAndSortedProducts());
+        renderPagination();
+        updateSortIndicators();
+      });
+    } else if (i === 1) {
+      $(this).on("click", function () {
+        if (sortField === "name") {
+          sortDir = sortDir === "asc" ? "desc" : "asc";
+        } else {
+          sortField = "name";
+          sortDir = "asc";
+        }
+        currentPage = 1;
+        renderProducts(getPagedAndSortedProducts());
+        renderPagination();
+        updateSortIndicators();
+      });
+    } else if (i === 2) {
+      $(this).on("click", function () {
+        if (sortField === "price") {
+          sortDir = sortDir === "asc" ? "desc" : "asc";
+        } else {
+          sortField = "price";
+          sortDir = "asc";
+        }
+        currentPage = 1;
+        renderProducts(getPagedAndSortedProducts());
+        renderPagination();
+        updateSortIndicators();
+      });
+    }
+  });
+
+  // Initial sort indicators
+  updateSortIndicators();
   function updateCancelState() {
     const name = $("#product-name").val().trim();
     const price = $("#product-price").val().trim();
@@ -118,12 +214,14 @@ $(document).ready(function () {
   // Listen for input changes
   $("#product-name, #product-price").on("input", updateCancelState);
   fetchProducts();
+  updateSortIndicators();
 
   // Page size change
   $("#page-size").on("change", function () {
     pageSize = parseInt($(this).val());
     currentPage = 1;
-    fetchProducts();
+    renderProducts(getPagedAndSortedProducts());
+    renderPagination();
   });
 
   // Pagination click
@@ -131,20 +229,23 @@ $(document).ready(function () {
     const page = parseInt($(this).data("page"));
     if (page !== currentPage) {
       currentPage = page;
-      fetchProducts();
+      renderProducts(getPagedAndSortedProducts());
+      renderPagination();
     }
   });
   $(document).on("click", "#prev-page", function () {
     if (currentPage > 1) {
       currentPage--;
-      fetchProducts();
+      renderProducts(getPagedAndSortedProducts());
+      renderPagination();
     }
   });
   $(document).on("click", "#next-page", function () {
     const totalPages = Math.ceil(totalResults / pageSize);
     if (currentPage < totalPages) {
       currentPage++;
-      fetchProducts();
+      renderProducts(getPagedAndSortedProducts());
+      renderPagination();
     }
   });
 
@@ -175,6 +276,7 @@ $(document).ready(function () {
     $("#product-id").val(id);
     $("#product-name").val(name);
     $("#product-price").val(price);
+    updateCancelState();
   });
 
   $("#products-table").on("click", ".delete-btn", function () {
