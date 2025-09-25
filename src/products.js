@@ -314,6 +314,8 @@ $(document).ready(function () {
     $("#product-name").val(name);
     $("#product-price").val(price);
     updateCancelState();
+    // Scroll to top to show the form
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   $("#products-table").on("click", ".delete-btn", function () {
