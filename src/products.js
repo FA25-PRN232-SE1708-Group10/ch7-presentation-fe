@@ -45,13 +45,13 @@ function renderPagination() {
   const pagination = $("#pagination");
   pagination.empty();
   if (totalPages <= 1) return;
-  // Prev button
+
   pagination.append(`<button class="btn btn-secondary" id="prev-page" ${currentPage === 1 ? "disabled" : ""}>Prev</button>`);
-  // Page numbers
+
   for (let i = 1; i <= totalPages; i++) {
     pagination.append(`<button class="btn btn-secondary page-btn" data-page="${i}" ${i === currentPage ? "style='font-weight:bold;background:#6366f1;color:#fff;'" : ""}>${i}</button>`);
   }
-  // Next button
+
   pagination.append(`<button class="btn btn-secondary" id="next-page" ${currentPage === totalPages ? "disabled" : ""}>Next</button>`);
 }
 
@@ -102,6 +102,21 @@ function deleteProduct(id) {
 }
 
 $(document).ready(function () {
+  function updateCancelState() {
+    const name = $("#product-name").val().trim();
+    const price = $("#product-price").val().trim();
+    if (name || price) {
+      $("#cancel-edit").prop("disabled", false);
+    } else {
+      $("#cancel-edit").prop("disabled", true);
+    }
+  }
+
+  // Initial state
+  updateCancelState();
+
+  // Listen for input changes
+  $("#product-name, #product-price").on("input", updateCancelState);
   fetchProducts();
 
   // Page size change
@@ -155,7 +170,6 @@ $(document).ready(function () {
     const row = $(this).closest("tr");
     const id = $(this).data("id");
     const name = row.find("td:eq(1)").text();
-    // Remove $ if present for editing
     const priceText = row.find("td:eq(2)").text();
     const price = priceText.replace(/\$/g, "");
     $("#product-id").val(id);
@@ -173,5 +187,6 @@ $(document).ready(function () {
   $("#cancel-edit").click(function () {
     $("#product-form")[0].reset();
     $("#product-id").val("");
+    updateCancelState();
   });
 });

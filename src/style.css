@@ -1,3 +1,12 @@
+/* Disabled button style for Cancel */
+#cancel-edit:disabled,
+.btn:disabled {
+  background: #2d2f36 !important;
+  color: #888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  pointer-events: none;
+}
 /* Style for the page size dropdown to match other components */
 #page-size {
   padding: 0.6em 1em;
