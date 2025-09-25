@@ -1,3 +1,24 @@
+#products-table th:nth-child(1),
+#products-table td:nth-child(1) {
+  width: 60px;
+  min-width: 60px;
+  max-width: 80px;
+  text-align: left;
+}
+#products-table th:nth-child(3),
+#products-table td:nth-child(3) {
+  width: 100px;
+  min-width: 80px;
+  max-width: 120px;
+  text-align: left;
+}
+#products-table th:nth-child(4),
+#products-table td:nth-child(4) {
+  width: 140px;
+  min-width: 120px;
+  max-width: 160px;
+  text-align: left;
+}
 /* Disabled button style for Cancel */
 #cancel-edit:disabled,
 .btn:disabled {
