@@ -3,9 +3,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: #f3f4f6;
+  background-color: #181a20;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,15 +26,15 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  background: linear-gradient(135deg, #181a20 0%, #23272f 100%);
   font-family: "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color: #222;
+  color: #f3f4f6;
 }
 
 .container {
   max-width: 1100px;
   margin: 40px auto;
-  background: #fff;
+  background: #23272f;
   border-radius: 18px;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.12);
   padding: 2.5rem 2.5rem 2.5rem 2.5rem;
@@ -43,7 +43,7 @@ body {
 h1 {
   font-size: 2.2em;
   font-weight: 700;
-  color: #2d3748;
+  color: #f3f4f6;
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -73,7 +73,9 @@ input[type="number"] {
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   font-size: 1em;
-  background: #f8fafc;
+  background: #23272f;
+  color: #f3f4f6;
+  border: 1px solid #374151;
   transition: border 0.2s;
 }
 input[type="text"]:focus,
@@ -99,11 +101,11 @@ input[type="number"]:focus {
   background: #4338ca;
 }
 .btn-secondary {
-  background: #e2e8f0;
-  color: #222;
+  background: #374151;
+  color: #f3f4f6;
 }
 .btn-secondary:hover {
-  background: #cbd5e1;
+  background: #23272f;
 }
 
 #products-table {
@@ -111,7 +113,7 @@ input[type="number"]:focus {
   min-width: 800px;
   border-collapse: separate;
   border-spacing: 0;
-  background: #f8fafc;
+  background: #23272f;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -122,19 +124,19 @@ input[type="number"]:focus {
   text-align: left;
 }
 #products-table th {
-  background: #e0e7ef;
-  color: #374151;
+  background: #181a20;
+  color: #f3f4f6;
   font-weight: 700;
 }
 #products-table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #374151;
   transition: background 0.2s;
 }
 #products-table tbody tr:hover {
-  background: #e0e7ef;
+  background: #23272f;
 }
 #products-table td {
-  color: #222;
+  color: #f3f4f6;
 }
 
 #products-table button {
@@ -144,24 +146,24 @@ input[type="number"]:focus {
   border: none;
   font-size: 0.95em;
   cursor: pointer;
-  background: #f1f5f9;
-  color: #374151;
+  background: #374151;
+  color: #f3f4f6;
   transition: background 0.2s, color 0.2s;
 }
 #products-table .edit-btn {
-  background: #a5b4fc;
-  color: #222;
-}
-#products-table .edit-btn:hover {
   background: #6366f1;
   color: #fff;
 }
+#products-table .edit-btn:hover {
+  background: #4338ca;
+  color: #fff;
+}
 #products-table .delete-btn {
-  background: #fecaca;
-  color: #b91c1c;
+  background: #ef4444;
+  color: #fff;
 }
 #products-table .delete-btn:hover {
-  background: #ef4444;
+  background: #b91c1c;
   color: #fff;
 }
 
