@@ -26,6 +26,15 @@
           <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
         </div>
       </form>
+      <div class="paging-controls" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem">
+        <label for="page-size">Page size:</label>
+        <select id="page-size" style="padding: 0.3em 1em; border-radius: 6px">
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+        <div id="pagination" style="margin-left: auto; display: flex; gap: 0.5rem"></div>
+      </div>
       <table id="products-table">
         <thead>
           <tr>

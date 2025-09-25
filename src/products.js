@@ -1,12 +1,17 @@
 const apiBaseUrl = "https://localhost:7094/api/products";
+let currentPage = 1;
+let pageSize = 5;
+let totalResults = 0;
 
-function fetchProducts() {
+function fetchProducts(page = currentPage, size = pageSize) {
   $.ajax({
-    url: apiBaseUrl + "?page=1&pageSize=10",
+    url: `${apiBaseUrl}?page=${page}&pageSize=${size}`,
     method: "GET",
     success: function (response) {
       if (response.success) {
+        totalResults = response.data.totalResults;
         renderProducts(response.data.items);
+        renderPagination();
       } else {
         alert("Failed to fetch products");
       }
@@ -33,6 +38,21 @@ function renderProducts(products) {
       </tr>
     `);
   });
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(totalResults / pageSize);
+  const pagination = $("#pagination");
+  pagination.empty();
+  if (totalPages <= 1) return;
+  // Prev button
+  pagination.append(`<button class="btn btn-secondary" id="prev-page" ${currentPage === 1 ? "disabled" : ""}>Prev</button>`);
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${i}" ${i === currentPage ? "style='font-weight:bold;background:#6366f1;color:#fff;'" : ""}>${i}</button>`);
+  }
+  // Next button
+  pagination.append(`<button class="btn btn-secondary" id="next-page" ${currentPage === totalPages ? "disabled" : ""}>Next</button>`);
 }
 
 function createProduct(product) {
@@ -83,6 +103,35 @@ function deleteProduct(id) {
 
 $(document).ready(function () {
   fetchProducts();
+
+  // Page size change
+  $("#page-size").on("change", function () {
+    pageSize = parseInt($(this).val());
+    currentPage = 1;
+    fetchProducts();
+  });
+
+  // Pagination click
+  $(document).on("click", ".page-btn", function () {
+    const page = parseInt($(this).data("page"));
+    if (page !== currentPage) {
+      currentPage = page;
+      fetchProducts();
+    }
+  });
+  $(document).on("click", "#prev-page", function () {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchProducts();
+    }
+  });
+  $(document).on("click", "#next-page", function () {
+    const totalPages = Math.ceil(totalResults / pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchProducts();
+    }
+  });
 
   $("#product-form").submit(function (e) {
     e.preventDefault();
