@@ -72,8 +72,45 @@ function renderPagination() {
 
   pagination.append(`<button class="btn btn-secondary" id="prev-page" ${currentPage === 1 ? "disabled" : ""}>Prev</button>`);
 
-  for (let i = 1; i <= totalPages; i++) {
-    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${i}" ${i === currentPage ? "style='font-weight:bold;background:#6366f1;color:#fff;'" : ""}>${i}</button>`);
+  // Always show first page
+  if (currentPage === 1) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="1" style='font-weight:bold;background:#6366f1;color:#fff;'>1</button>`);
+  } else {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="1">1</button>`);
+  }
+
+  // Show ... if needed before previous page
+  if (currentPage > 3) {
+    pagination.append(`<span class="pagination-ellipsis">...</span>`);
+  }
+
+  // Show previous page if not first or second
+  if (currentPage - 1 > 1) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage - 1}">${currentPage - 1}</button>`);
+  }
+
+  // Show current page if not first or last
+  if (currentPage !== 1 && currentPage !== totalPages) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage}" style='font-weight:bold;background:#6366f1;color:#fff;'>${currentPage}</button>`);
+  }
+
+  // Show next page if not last or second to last
+  if (currentPage + 1 < totalPages) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage + 1}">${currentPage + 1}</button>`);
+  }
+
+  // Show ... if needed after next page
+  if (currentPage < totalPages - 2) {
+    pagination.append(`<span class="pagination-ellipsis">...</span>`);
+  }
+
+  // Always show last page if more than one
+  if (totalPages > 1) {
+    if (currentPage === totalPages) {
+      pagination.append(`<button class="btn btn-secondary page-btn" data-page="${totalPages}" style='font-weight:bold;background:#6366f1;color:#fff;'>${totalPages}</button>`);
+    } else {
+      pagination.append(`<button class="btn btn-secondary page-btn" data-page="${totalPages}">${totalPages}</button>`);
+    }
   }
 
   pagination.append(`<button class="btn btn-secondary" id="next-page" ${currentPage === totalPages ? "disabled" : ""}>Next</button>`);
