@@ -1,3 +1,19 @@
+/* Style for the page size dropdown to match other components */
+#page-size {
+  padding: 0.6em 1em;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  font-size: 1em;
+  background: #23272f;
+  color: #f3f4f6;
+  transition: border 0.2s;
+  appearance: none;
+  outline: none;
+  margin-left: 0.5em;
+}
+#page-size:focus {
+  border: 1.5px solid #6366f1;
+}
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
