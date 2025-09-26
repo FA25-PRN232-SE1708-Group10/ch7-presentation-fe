@@ -8,22 +8,17 @@ let sortDir = "asc";
 let lastFetchedProducts = [];
 
 function fetchProducts() {
-  $.ajax({
-    url: `${apiBaseUrl}?page=1&pageSize=1000`,
-    method: "GET",
-    success: function (response) {
-      if (response.success) {
-        lastFetchedProducts = response.data.items || [];
-        totalResults = lastFetchedProducts.length;
-        renderProducts(getPagedAndSortedProducts());
-        renderPagination();
-      } else {
-        alert("Failed to fetch products");
-      }
-    },
-    error: function () {
-      alert("Error fetching products");
-    },
+  $.getJSON(`${apiBaseUrl}?page=1&pageSize=1000`, function (response) {
+    if (response.success) {
+      lastFetchedProducts = response.data.items || [];
+      totalResults = lastFetchedProducts.length;
+      renderProducts(getPagedAndSortedProducts());
+      renderPagination();
+    } else {
+      alert("Failed to fetch products");
+    }
+  }).fail(function () {
+    alert("Error fetching products");
   });
 }
 
@@ -117,9 +112,8 @@ function renderPagination() {
 }
 
 function createProduct(product) {
-  $.ajax({
+  $.post({
     url: apiBaseUrl,
-    method: "POST",
     contentType: "application/json",
     data: JSON.stringify(product),
     success: function () {
