@@ -8,11 +8,11 @@ let sortDir = "asc";
 let lastFetchedProducts = [];
 
 function fetchProducts() {
-  $.getJSON(`${apiBaseUrl}?page=1&pageSize=1000`, function (response) {
+  $.getJSON(`${apiBaseUrl}?page=${currentPage}&pageSize=${pageSize}` + (sortField ? `&sortBy=${sortField}&sortOrder=${sortDir}` : ""), function (response) {
     if (response.success) {
       lastFetchedProducts = response.data.items || [];
-      totalResults = lastFetchedProducts.length;
-      renderProducts(getPagedAndSortedProducts());
+      totalResults = response.data.totalResults || 0;
+      renderProducts(lastFetchedProducts);
       renderPagination();
     } else {
       alert("Failed to fetch products");
@@ -20,25 +20,6 @@ function fetchProducts() {
   }).fail(function () {
     alert("Error fetching products");
   });
-}
-
-function getPagedAndSortedProducts() {
-  let arr = [...lastFetchedProducts];
-  if (sortField) {
-    arr.sort((a, b) => {
-      let aVal = a[sortField];
-      let bVal = b[sortField];
-      if (sortField === "name") {
-        aVal = aVal ? aVal.toLowerCase() : "";
-        bVal = bVal ? bVal.toLowerCase() : "";
-      }
-      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-      return 0;
-    });
-  }
-  const start = (currentPage - 1) * pageSize;
-  return arr.slice(start, start + pageSize);
 }
 
 function renderProducts(products) {
@@ -67,45 +48,30 @@ function renderPagination() {
 
   pagination.append(`<button class="btn btn-secondary" id="prev-page" ${currentPage === 1 ? "disabled" : ""}>Prev</button>`);
 
-  // Always show first page
-  if (currentPage === 1) {
-    pagination.append(`<button class="btn btn-secondary page-btn" data-page="1" style='font-weight:bold;background:#6366f1;color:#fff;'>1</button>`);
-  } else {
+  // Windowed pagination: show first, last, and a window around current page
+  const windowSize = 2; // pages before/after current
+  let startPage = Math.max(1, currentPage - windowSize);
+  let endPage = Math.min(totalPages, currentPage + windowSize);
+
+  // Show first page
+  if (startPage > 1) {
     pagination.append(`<button class="btn btn-secondary page-btn" data-page="1">1</button>`);
-  }
-
-  // Show ... if needed before previous page
-  if (currentPage > 3) {
-    pagination.append(`<span class="pagination-ellipsis">...</span>`);
-  }
-
-  // Show previous page if not first or second
-  if (currentPage - 1 > 1) {
-    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage - 1}">${currentPage - 1}</button>`);
-  }
-
-  // Show current page if not first or last
-  if (currentPage !== 1 && currentPage !== totalPages) {
-    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage}" style='font-weight:bold;background:#6366f1;color:#fff;'>${currentPage}</button>`);
-  }
-
-  // Show next page if not last or second to last
-  if (currentPage + 1 < totalPages) {
-    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${currentPage + 1}">${currentPage + 1}</button>`);
-  }
-
-  // Show ... if needed after next page
-  if (currentPage < totalPages - 2) {
-    pagination.append(`<span class="pagination-ellipsis">...</span>`);
-  }
-
-  // Always show last page if more than one
-  if (totalPages > 1) {
-    if (currentPage === totalPages) {
-      pagination.append(`<button class="btn btn-secondary page-btn" data-page="${totalPages}" style='font-weight:bold;background:#6366f1;color:#fff;'>${totalPages}</button>`);
-    } else {
-      pagination.append(`<button class="btn btn-secondary page-btn" data-page="${totalPages}">${totalPages}</button>`);
+    if (startPage > 2) {
+      pagination.append(`<span class="pagination-ellipsis">...</span>`);
     }
+  }
+
+  // Show window of pages around current
+  for (let i = startPage; i <= endPage; i++) {
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${i}" ${i === currentPage ? "style='font-weight:bold;background:#6366f1;color:#fff;'" : ""}>${i}</button>`);
+  }
+
+  // Show last page
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      pagination.append(`<span class="pagination-ellipsis">...</span>`);
+    }
+    pagination.append(`<button class="btn btn-secondary page-btn" data-page="${totalPages}">${totalPages}</button>`);
   }
 
   pagination.append(`<button class="btn btn-secondary" id="next-page" ${currentPage === totalPages ? "disabled" : ""}>Next</button>`);
@@ -206,8 +172,7 @@ $(document).ready(function () {
           sortDir = "asc";
         }
         currentPage = 1;
-        renderProducts(getPagedAndSortedProducts());
-        renderPagination();
+        fetchProducts();
         updateSortIndicators();
       });
     } else if (i === 1) {
@@ -219,8 +184,7 @@ $(document).ready(function () {
           sortDir = "asc";
         }
         currentPage = 1;
-        renderProducts(getPagedAndSortedProducts());
-        renderPagination();
+        fetchProducts();
         updateSortIndicators();
       });
     } else if (i === 2) {
@@ -232,8 +196,7 @@ $(document).ready(function () {
           sortDir = "asc";
         }
         currentPage = 1;
-        renderProducts(getPagedAndSortedProducts());
-        renderPagination();
+        fetchProducts();
         updateSortIndicators();
       });
     }
@@ -264,7 +227,7 @@ $(document).ready(function () {
     pageSize = parseInt($(this).val());
     localStorage.setItem("pageSize", pageSize);
     currentPage = 1;
-    renderProducts(getPagedAndSortedProducts());
+    fetchProducts();
     renderPagination();
   });
 
@@ -273,14 +236,14 @@ $(document).ready(function () {
     const page = parseInt($(this).data("page"));
     if (page !== currentPage) {
       currentPage = page;
-      renderProducts(getPagedAndSortedProducts());
+      fetchProducts();
       renderPagination();
     }
   });
   $(document).on("click", "#prev-page", function () {
     if (currentPage > 1) {
       currentPage--;
-      renderProducts(getPagedAndSortedProducts());
+      fetchProducts();
       renderPagination();
     }
   });
@@ -288,7 +251,7 @@ $(document).ready(function () {
     const totalPages = Math.ceil(totalResults / pageSize);
     if (currentPage < totalPages) {
       currentPage++;
-      renderProducts(getPagedAndSortedProducts());
+      fetchProducts();
       renderPagination();
     }
   });
